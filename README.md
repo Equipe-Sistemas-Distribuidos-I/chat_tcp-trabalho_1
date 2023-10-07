@@ -86,6 +86,4 @@ O servidor será iniciado e começará a aguardar conexões de clientes.
 
 3. Comandos do Cliente: O cliente aguarda comandos do usuário, como mensagens de texto ou comandos especiais, como `/SAIR`. Quando o usuário envia uma mensagem, ela é enviada ao servidor para ser encaminhada para outros clientes.
 
-4. Personalização do README: O README fornece informações sobre como executar o servidor e o cliente, os comandos que o cliente pode usar e outras notas importantes.
-
 Resumidamente, o servidor cria um soquete para aceitar conexões de clientes e gerencia as interações entre eles, enquanto o cliente cria um soquete para se conectar ao servidor e permite que os usuários enviem comandos e mensagens. As threads são usadas para permitir que várias conexões e a comunicação ocorram simultaneamente.
