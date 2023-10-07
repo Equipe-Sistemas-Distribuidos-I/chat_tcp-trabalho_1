@@ -63,19 +63,25 @@ def sair_do_chat(client_socket, apelido):
         del clientes[client_socket]
         broadcast(f"{apelido} saiu do chat.")
         print(f"{apelido} saiu do chat.")
-    client_socket.shutdown(socket.SHUT_RDWR)
     client_socket.close()
 
-def broadcast(message):
+def broadcast(message, sender_socket=None):
     for client_socket in clientes:
-        try:
-            client_socket.send(message.encode('utf-8'))
-        except:
-            continue
+        if client_socket != sender_socket:
+            try:
+                client_socket.send(message.encode('utf-8'))
+            except:
+                continue
+        elif sender_socket is None:
+            try:
+                client_socket.send(message.encode('utf-8'))
+            except:
+                continue
+                
 
 def encaminhar_mensagem(client_socket, message):
     apelido = clientes[client_socket]
-    broadcast(f"{apelido}: {message}")
+    broadcast(f"{apelido}: {message}", client_socket)
 
 def main():
     host = '127.0.0.1'
@@ -87,20 +93,10 @@ def main():
 
     print(f"Servidor ouvindo em {host}:{port}")
 
-    try:
-        while True:
-            client_socket, client_address = server_socket.accept()
-            print(f"Nova conexão de {client_address}")
-            client_handler = threading.Thread(target=handle_client, args=(client_socket, client_address))
-            client_handler.start()
-
-    except KeyboardInterrupt:
-        print("Servidor encerrado pelo usuário.")
-        for client_socket in clientes:
-            client_socket.shutdown(socket.SHUT_RDWR)
-            client_socket.close()
-        server_socket.shutdown(socket.SHUT_RDWR)
-        server_socket.close()
+    while True:
+        client_socket, client_address = server_socket.accept()
+        client_handler = threading.Thread(target=handle_client, args=(client_socket, client_address))
+        client_handler.start()
 
 if __name__ == "__main__":
     main()

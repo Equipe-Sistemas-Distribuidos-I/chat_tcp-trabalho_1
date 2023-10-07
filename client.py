@@ -32,8 +32,7 @@ def main():
                 break
         elif comando_entrada == '/SAIR':
             print("Saindo do chat.")
-            client_socket.send(comando_entrada.encode('utf-8'))
-            break
+            return
         else:
             print("Comando inválido. Tente novamente.")
 
@@ -49,8 +48,7 @@ def main():
         else:
             client_socket.send(message.encode('utf-8'))
 
-    # Agora, fechamos o socket apenas uma vez após o loop de mensagens
     client_socket.close()
-    
+
 if __name__ == "__main__":
     main()
