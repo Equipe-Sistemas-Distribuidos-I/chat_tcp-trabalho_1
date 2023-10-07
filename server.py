@@ -2,14 +2,12 @@ import socket
 import threading
 
 # Dicionário para armazenar clientes conectados e seus apelidos
-clientes = {}
+clients = {}
 
 # Máximo de clientes na sala
-MAX_CLIENTES = 4
+MAX_CLIENTS = 4
 
 def handle_client(client_socket, client_address):
-    apelido = None
-
     try:
         while True:
             data = client_socket.recv(1024).decode('utf-8')
@@ -18,55 +16,55 @@ def handle_client(client_socket, client_address):
 
             # Analisar os comandos do cliente
             if data.startswith('/ENTRAR'):
-                _, ip, porta, apelido = data.split()
-                entrar_no_chat(client_socket, client_address, apelido)
+                _, ip, porta, nickname = data.split()
+                join_chat(client_socket, client_address, nickname)
             elif data.startswith('/USUARIOS'):
-                listar_usuarios(client_socket)
+                list_users(client_socket)
             elif data.startswith('/NICK'):
-                _, novo_apelido = data.split()
-                mudar_apelido(client_socket, novo_apelido)
+                _, new_nickname = data.split()
+                change_nickname(client_socket, new_nickname)
             elif data.startswith('/SAIR'):
                 break
             else:
-                encaminhar_mensagem(client_socket, data)
+                forward_message(client_socket, data)
 
     except Exception as e:
         print(f"Erro: {e}")
 
     finally:
-        if apelido:
-            sair_do_chat(client_socket, apelido)
+        if nickname:
+            leave_chat(client_socket, nickname)
 
-def entrar_no_chat(client_socket, client_address, apelido):
-    if len(clientes) < MAX_CLIENTES and apelido not in clientes.values():
-        clientes[client_socket] = apelido
-        broadcast(f"{apelido} entrou no chat.")
-        print(f"{apelido} ({client_address}) entrou no chat.")
+def join_chat(client_socket, client_address, nickname):
+    if len(clients) < MAX_CLIENTS and nickname not in clients.values():
+        clients[client_socket] = nickname
+        broadcast(f"{nickname} entrou no chat.")
+        print(f"{nickname} ({client_address}) entrou no chat.")
     else:
         client_socket.send("Limite de clientes atingido ou apelido já em uso. Conexão negada.".encode('utf-8'))
         client_socket.close()
 
-def listar_usuarios(client_socket):
-    usuarios = ', '.join(clientes.values())
-    client_socket.send(f"Usuários conectados: {usuarios}".encode('utf-8'))
+def list_users(client_socket):
+    users = ', '.join(clients.values())
+    client_socket.send(f"Usuários conectados: {users}".encode('utf-8'))
 
-def mudar_apelido(client_socket, novo_apelido):
-    apelido_atual = clientes[client_socket]
-    if novo_apelido not in clientes.values():
-        clientes[client_socket] = novo_apelido
-        broadcast(f"{apelido_atual} mudou o apelido para {novo_apelido}.")
+def change_nickname(client_socket, new_nickname):
+    current_nickname = clients[client_socket]
+    if new_nickname not in clients.values():
+        clients[client_socket] = new_nickname
+        broadcast(f"{current_nickname} mudou o apelido para {new_nickname}.")
     else:
         client_socket.send("Apelido já em uso.".encode('utf-8'))
 
-def sair_do_chat(client_socket, apelido):
-    if client_socket in clientes:
-        del clientes[client_socket]
+def leave_chat(client_socket, apelido):
+    if client_socket in clients:
+        del clients[client_socket]
         broadcast(f"{apelido} saiu do chat.")
         print(f"{apelido} saiu do chat.")
     client_socket.close()
 
 def broadcast(message, sender_socket=None):
-    for client_socket in clientes:
+    for client_socket in clients:
         if client_socket != sender_socket:
             try:
                 client_socket.send(message.encode('utf-8'))
@@ -79,8 +77,8 @@ def broadcast(message, sender_socket=None):
                 continue
                 
 
-def encaminhar_mensagem(client_socket, message):
-    apelido = clientes[client_socket]
+def forward_message(client_socket, message):
+    apelido = clients[client_socket]
     broadcast(f"{apelido}: {message}", client_socket)
 
 def main():

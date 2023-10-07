@@ -11,26 +11,26 @@ def receive_messages(client_socket):
 
 def main():
     while True:
-        comando_entrada = input("Digite '/ENTRAR' para entrar no chat, '/SAIR' para sair: ")
+        input_command = input("Digite '/ENTRAR' para entrar no chat, '/SAIR' para sair: ")
 
-        if comando_entrada == '/ENTRAR':
+        if input_command == '/ENTRAR':
             host = input("Digite o IP do servidor: ")
             port = int(input("Digite a porta do servidor: "))
-            apelido = input("Digite seu apelido: ")
+            nickname = input("Digite seu apelido: ")
 
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client_socket.connect((host, port))
 
-            entrar_comando = f"{comando_entrada} {host} {port} {apelido}"
-            client_socket.send(entrar_comando.encode('utf-8'))
+            join_command = f"{input_command} {host} {port} {nickname}"
+            client_socket.send(join_command.encode('utf-8'))
 
             # Receber resposta do servidor
-            resposta = client_socket.recv(1024).decode('utf-8')
-            print(resposta)
+            response = client_socket.recv(1024).decode('utf-8')
+            print(response)
 
-            if "Conexão negada" not in resposta:
+            if "Conexão negada" not in response:
                 break
-        elif comando_entrada == '/SAIR':
+        elif input_command == '/SAIR':
             print("Saindo do chat.")
             return
         else:
