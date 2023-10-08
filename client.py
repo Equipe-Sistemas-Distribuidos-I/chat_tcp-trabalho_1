@@ -1,6 +1,7 @@
 import socket
 import threading
 
+# Função para receber mensagens do servidor
 def receive_messages(client_socket):
     while True:
         try:

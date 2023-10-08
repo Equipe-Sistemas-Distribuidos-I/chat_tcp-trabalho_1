@@ -7,6 +7,7 @@ clients = {}
 # Máximo de clientes na sala
 MAX_CLIENTS = 4
 
+# Função para lidar com os clientes
 def handle_client(client_socket, client_address):
     try:
         while True:
@@ -35,6 +36,7 @@ def handle_client(client_socket, client_address):
         if nickname:
             leave_chat(client_socket, nickname)
 
+# Função para adicionar um cliente ao chat
 def join_chat(client_socket, client_address, nickname):
     if len(clients) < MAX_CLIENTS and nickname not in clients.values():
         clients[client_socket] = nickname
@@ -44,10 +46,12 @@ def join_chat(client_socket, client_address, nickname):
         client_socket.send("Limite de clientes atingido ou apelido já em uso. Conexão negada.".encode('utf-8'))
         client_socket.close()
 
+# Função para listar os usuários conectados
 def list_users(client_socket):
     users = ', '.join(clients.values())
     client_socket.send(f"Usuários conectados: {users}".encode('utf-8'))
 
+# Função para alterar o apelido de um cliente
 def change_nickname(client_socket, new_nickname):
     current_nickname = clients[client_socket]
     if new_nickname not in clients.values():
@@ -56,15 +60,18 @@ def change_nickname(client_socket, new_nickname):
     else:
         client_socket.send("Apelido já em uso.".encode('utf-8'))
 
-def leave_chat(client_socket, apelido):
+# Função para remover um cliente do chat
+def leave_chat(client_socket, nickname):
     if client_socket in clients:
         del clients[client_socket]
-        broadcast(f"{apelido} saiu do chat.")
-        print(f"{apelido} saiu do chat.")
+        broadcast(f"{nickname} saiu do chat.")
+        print(f"{nickname} saiu do chat.")
     client_socket.close()
 
+# Função para enviar uma mensagem para todos os clientes conectados
 def broadcast(message, sender_socket=None):
     for client_socket in clients:
+        # Não enviar a mensagem para o próprio cliente
         if client_socket != sender_socket:
             try:
                 client_socket.send(message.encode('utf-8'))
@@ -76,10 +83,10 @@ def broadcast(message, sender_socket=None):
             except:
                 continue
                 
-
+# Função para enviar uma mensagem para um cliente específico
 def forward_message(client_socket, message):
-    apelido = clients[client_socket]
-    broadcast(f"{apelido}: {message}", client_socket)
+    nickname = clients[client_socket]
+    broadcast(f"{nickname}: {message}", client_socket)
 
 def main():
     host = '127.0.0.1'

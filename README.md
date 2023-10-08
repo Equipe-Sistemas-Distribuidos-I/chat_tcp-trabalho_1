@@ -66,15 +66,15 @@ O servidor será iniciado e começará a aguardar conexões de clientes.
 
 1. Importação de bibliotecas: O código começa importando a biblioteca `socket` para usar as funcionalidades de comunicação por soquete e `threading` para lidar com várias conexões em threads separadas.
 
-2. Variáveis Globais: Define algumas variáveis globais, como `clientes` para rastrear os clientes conectados e `MAX_CLIENTES` para o número máximo de clientes suportados na sala.
+2. Variáveis Globais: Define algumas variáveis globais, como `clients` para rastrear os clientes conectados e `MAX_CLIENTES` para o número máximo de clientes suportados na sala.
 
 3. Função `handle_client`: Esta função é executada em uma thread separada para cada cliente conectado. Ela lê os comandos enviados pelo cliente, como `/ENTRAR`, `/USUARIOS`, `/NICK` e `/SAIR`, e executa ações correspondentes.
 
-4. Funções de Comando: Existem funções específicas para cada comando, como `entrar_no_chat`, `listar_usuarios`, `mudar_apelido` e `sair_do_chat`. Essas funções processam os comandos do cliente e atualizam a lista de clientes conectados, enviam mensagens de broadcast ou fazem outras ações necessárias.
+4. Funções de Comando: Existem funções específicas para cada comando, como `join_chat`, `list_users`, `change_nickname` e `leave_chat`. Essas funções processam os comandos do cliente e atualizam a lista de clientes conectados, enviam mensagens de broadcast ou fazem outras ações necessárias.
 
 5. Função `broadcast`: Essa função envia uma mensagem para todos os clientes conectados, exceto o cliente que a enviou.
 
-6. Função `encaminhar_mensagem`: Essa função envia uma mensagem de um cliente para todos os outros clientes na sala de chat.
+6. Função `forward_message`: Essa função envia uma mensagem de um cliente para todos os outros clientes na sala de chat.
 
 7. Função `main`: A função principal do servidor configura o soquete do servidor, vincula-o a um endereço IP e porta específicos e fica ouvindo por conexões de clientes em um loop infinito. Quando um cliente se conecta, um novo thread é criado para lidar com esse cliente usando a função `handle_client`.
 
